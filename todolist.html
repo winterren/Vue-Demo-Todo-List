@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Vue Todo List</title>
+	<script src="./vue.js"></script>
+	<style>
+		html{
+			font-size:62.5%;
+		}
+		*{
+			margin:0;
+			padding: 0;
+			list-style: none;
+			font-size: 1.4rem;
+		}
+		body{
+			background: #E8E8E8;
+		}
+		header,.add-task,.hint-cat{
+			padding: 15px 15px 0;
+			background: #FFBB00;
+		}
+		.container{
+			width: 380px;
+			margin:0 auto;
+		}
+		.add-task p{
+			font-size: 1.2rem;
+		}
+		.add-input{
+			margin-top:5px;
+			width: 350px;
+			border: 1px solid #6e6e6e;
+			color: #6e6e6e;
+			font-size: 1.1rem;
+			padding:5px;
+		}
+		.hint-cat{
+			height: 20px;
+			padding-bottom: 15px;
+			box-shadow:0px 2px 1px 0px #6e6e6e;
+		}
+		.hint{
+			float:left;
+		}
+		.hint span{
+			font-size: 1.1rem;
+		}
+		.category{
+			float:left;
+			padding-left: 100px;
+		}
+		.category li{
+			font-size: 1.1rem;
+			display: inline-block;
+			padding: 3px;
+			border-radius: 5px;
+			border: 1px solid #8e8e8e;
+			color: #8e8e8e;
+		}
+		/*任务*/
+		.tasks{
+			margin-top: 20px;
+		}
+		.todo{
+			display: block;
+			height: 30px;
+			line-height: 30px;
+
+		}
+		.todo:hover{
+			border-top: 1px solid rgba(0,0,0,.54);
+			border-bottom: 1px solid rgba(0,0,0,.54);
+		}
+		.todo label{
+			margin-left: 4px;
+			font-size: 1.3rem;
+			line-height: 30px;
+		}
+		.destroy{
+			display: none;
+		}
+		.todo:hover .destroy{
+			position: relative;
+			top: 9px;
+			right:30px;
+			float: right;
+			font-size: 5px;
+			background: #3B3B3B;
+			color: white;
+			width: 12px;
+			height: 12px;
+			display: inline-block;
+			border: 1px solid #3B3B3B;
+			border-radius:50%; 
+		}
+
+
+
+		/*vue*/
+		.completed{
+			color:rgba(0,0,0,.54);
+			text-decoration: line-through;
+		}
+		.toggle{
+			position: relative;
+			top:2px;
+			border-radius: 1px;
+		}
+		.edit, .editing .view{
+			display: none;
+		}
+		.editing .edit, .view{
+			display: block;
+		}
+		
+
+	</style>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<h2>To-do List</h2>
+		</div>
+		
+	</header>
+	<!-- 挂载vue的主程序区 -->
+	<div class="main">
+		<!-- 添加区 -->
+		
+		<div class="add-task">
+			<div class="container">
+				<p>添加任务</p>
+				<input 
+					v-model="inputvalue"
+					v-on:keyup.enter="addTodo"
+					type="text" placeholder="按回车确认" class="add-input"
+				>
+			</div>
+			
+		</div>
+
+		<div class="hint-cat">
+			<div class="container">
+				<!-- 提示 -->
+				<div class="hint" v-show="list.length">
+					<span>
+						{{ noCheckedLength }}
+						个任务未完成
+					</span>
+				</div>
+				<!-- 分类 -->
+				<div class="category">
+					<ul>
+						<li v-on:click="cat='all'">所有任务</li>
+						<li v-on:click="cat='completed'">已完成任务</li>
+						<li v-on:click="cat='uncompleted'">未完成任务</li>
+					</ul>
+				</div>
+			</div>
+			
+		</div>
+		
+
+		<!-- 显示区 -->
+		<div class="tasks">
+			<div class="container">
+				<span v-show="!list.length">还没有添加任何任务</span>
+				<ul class="todo-list">
+					<!-- 从vue渲染进来 -->
+					<li class="todo" v-bind:class="{completed:item.isChecked, editing:item===editing}" v-for="item in list" v-if="cate(item)">
+						<div class="view">
+							<input type="checkbox"  class="toggle" v-model="item.isChecked">
+							<label v-on:dblclick="edit(item)">{{item.title}}</label>
+							<button class="destroy" v-on:click="deleteTodo(item)">×</button>
+						</div>
+						<input 
+							v-focus="item===editing" 
+							type="text" 
+							class="edit" 
+							v-model="item.title" 
+							v-on:blur="edited(item)"
+							v-on:keyup.13="edited(item)"
+							v-on:keyup.esc="cancel(item)"
+						>
+					</li>
+
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+	
+	<script src="./app.js"></script>
+</body>
+</html>
