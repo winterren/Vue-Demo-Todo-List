@@ -9,18 +9,18 @@ var storage = {
 	}
 }
 
-// 数据格式
-var defaultlist = [
-	{
-		title:"起床",
-		isChecked:true
-	},
-	{
-		title:"睡觉",
-		isChecked:false
-	}
-];
-storage.save("mystorage",defaultlist)
+// // 数据格式
+// var defaultlist = [
+// 	{
+// 		title:"起床",
+// 		isChecked:true
+// 	},
+// 	{
+// 		title:"睡觉",
+// 		isChecked:false
+// 	}
+// ];
+
 
 var list = storage.fetch("mystorage");
 //过滤时考虑三种情况all completed uncompleted
