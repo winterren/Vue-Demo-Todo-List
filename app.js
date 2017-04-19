@@ -10,12 +10,17 @@ var storage = {
 }
 
 // 数据格式
-// var list = [
-// 	{
-// 		title:"起床",
-// 		isChecked:true
-// 	}
-// ];
+var defaultlist = [
+	{
+		title:"起床",
+		isChecked:true
+	},
+	{
+		title:"睡觉",
+		isChecked:false
+	}
+];
+storage.save("mystorage",defaultlist)
 
 var list = storage.fetch("mystorage");
 //过滤时考虑三种情况all completed uncompleted
