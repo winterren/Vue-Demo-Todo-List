@@ -1,30 +1,43 @@
-// 数据格式
-var list = [
-	{
-		title:"起床",
-		isChecked:true
+//存取localStorage
+var storage = {
+	save(key,value){
+		// 把value转成字符串
+		localStorage.setItem(key,JSON.stringify(value));
 	},
-	{
-		title:"洗脸",
-		isChecked:true
-	},
-	{
-		title:"刷牙",
-		isChecked:false
-	},
-	{
-		title:"听课",
-		isChecked:false
-	},
-	{
-		title:"打盹",
-		isChecked:true
+	fetch(key){
+		return JSON.parse(localStorage.getItem(key)) || [];
 	}
-];
+}
+
+// 数据格式
+// var list = [
+// 	{
+// 		title:"起床",
+// 		isChecked:true
+// 	}
+// ];
+
+var list = storage.fetch("mystorage");
+//过滤时考虑三种情况all completed uncompleted
+var filter = {
+	all:function(){
+		return list;
+	},
+	completed:function(){
+		return list.filter(function(item){
+			return item.isChecked;
+		})
+	},
+	uncompleted:function(){
+		return list.filter(function(item){
+			return !item.isChecked;
+		})
+	}
+}
 
 
 // 实例化
-new Vue({
+var vm = new Vue({
 	// 挂载点
 	el: ".main",
 	// 挂载数据
@@ -33,24 +46,31 @@ new Vue({
 		inputvalue: "", //记录将要添加的数据
 		editing:'' ,	//记录正在编辑的数据
 		beforeEdit:'',	//记录正在编辑的数据的title
-		cat:"all"
+		visibility:"all"//
+	},
+	watch:{
+		list:{
+			handler:function(){
+				// list变化时执行函数
+				storage.save("mystorage",this.list)
+			},
+			deep:true
+		}
 	},
 	computed:{
 		noCheckedLength:function(){
 			return this.list.filter(function(item){
 						return !item.isChecked;
 					}).length
+		},
+		filterList:function(){
+			
+			return filter[this.visibility] ? filter[this.visibility](list):list;
+
 		}
 	},
 	methods:{
 		addTodo(e){	//添加任务
-			// 向list中添加任务
-			/*
-				{
-					title:
-				}
-			*/
-
 			this.list.unshift({
 				title: this.inputvalue,
 				isChecked: false
@@ -73,17 +93,6 @@ new Vue({
 		cancel(item){//取消
 			item.title = this.beforeEdit;
 			this.editing = '';
-		},
-		cate(item){
-			switch(this.cat){
-				case "all":
-					return item;
-				case "completed":
-					return item.isChecked===true;
-				case "uncompleted":
-					return item.isChecked===false;
-			}
-			
 		}
 	},
 	directives:{
@@ -97,3 +106,9 @@ new Vue({
 		}
 })
 
+function watchHashChange(){
+	var hash = window.location.hash.slice(1);
+	vm.visibility = hash;
+}
+watchHashChange();
+window.addEventListener("hashchange",watchHashChange);
